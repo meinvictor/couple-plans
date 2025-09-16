@@ -13,12 +13,18 @@
 
 html,
 body {
-  height: 100%;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   background-repeat: no-repeat;
   background-attachment: fixed;
   font-family: "Chiron GoRound TC", sans-serif;
+}
+
+.container,
+.task-list,
+.add-task {
+  background: transparent; /* або rgba(255,255,255,0.2) для прозорого шару */
 }
 
 body.light {
@@ -34,7 +40,7 @@ body.dark {
 
 
 body.dark .addTaskButton {
-  background-color: rgba(70, 50, 90, 1);
+  background-color: rgba(70, 50, 90, .5);
 }
 
 body.dark .task-time {
