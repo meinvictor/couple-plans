@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Chiron+GoRound+TC:wght@200..900&display=swap');
+
+:root {
+  --color-purple: #b388ff;
+  --color-light-bg: rgba(255, 255, 255, 0.25);
+  --color-dark-bg: rgba(50, 30, 60, 0.35);
+  --color-text-light: #1a1a1a;
+  --color-text-dark: #f0f0f0;
+  --shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --blur: blur(10px);
+  --border-radius: 16px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: "Chiron GoRound TC", sans-serif;
+}
+
+body.light {
+  background: linear-gradient(135deg, #f0e5ff, #d9c2ff);
+  color: var(--color-text-light);
+}
+
+body.dark {
+  background: linear-gradient(135deg, #2c1e3a, #42275a);
+  color: var(--color-text-dark);
+}
+
+
+
+body.dark .addTaskButton {
+  background-color: rgba(70, 50, 90, 1);
+}
+
+body.dark .task-time {
+  background-color: rgba(70, 50, 90, 1);
+}

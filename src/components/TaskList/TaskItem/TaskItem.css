@@ -1,0 +1,176 @@
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  padding: 15px 30px 20px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  backdrop-filter: var(--blur);
+  color: var(--color-text-light);
+  transition: transform 0.25s ease, background 0.3s ease, opacity 0.3s ease;
+  margin: 2.5vh 0;
+}
+
+.task-item.removing {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+body.dark .task-item {
+  background: rgba(70, 50, 90, 0.3);
+  color: var(--color-text-dark);
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+}
+
+
+.task-time {
+  position: absolute;   
+  top: 5px;           
+  left: 6px;           
+  font-size: 0.75rem;  
+  font-weight: bolder;
+  opacity: 0.4;
+  background-color: #a566ff;
+  color: white;
+  border-radius: var(--border-radius);
+  padding: 3px 8px;
+  white-space: nowrap;  
+  pointer-events: none; 
+}
+
+.taskCompleteCheckbox {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(165, 102, 255, 0.5);
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.taskCompleteCheckbox:checked {
+  background-color: #a566ff;
+  border-color: #a566ff;
+}
+
+.taskCompleteCheckbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;      /* зменшили ширину */
+  height: 8px;     /* зменшили висоту */
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.taskCompleteCheckbox:hover {
+  box-shadow: 0 0 6px rgba(165, 102, 255, 0.5);
+}
+
+
+.task-content {
+  flex: 1 1 auto;          
+  margin: 0 30px;
+  word-break: break-word;  
+  overflow-wrap: anywhere;   
+  white-space: pre-wrap; 
+}
+
+.task-title,
+.task-subtitle {
+  display: block;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.task-actions {
+  position: absolute;   
+  right: 10px;          
+  top: 50%;            
+  transform: translateY(-50%);       
+  font-size: 0.75rem;  
+  font-weight: bolder;
+  padding: 3px 8px;
+  white-space: nowrap;  
+ 
+}
+.task-actions button {
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  transition: transform 0.2s; 
+}
+
+.task-actions button img {
+  width: 12px;
+}
+
+.task-actions button:hover {
+  transform: scale(1.2);
+}
+
+.task-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.task-edit-form input {
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 1rem;
+  color: var(--color-text-light);
+  outline: none;
+}
+
+body.dark .task-edit-form input {
+  background: rgba(70, 50, 90, 0.4);
+  color: var(--color-text-dark);
+}
+
+.task-edit-form .save-btn {
+  align-self: flex-end;
+  padding: 6px 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: var(--color-purple);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.task-edit-form .save-btn:hover {
+  background-color: #a566ff;
+}
+
+/* Анімація появи */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
