@@ -12,12 +12,6 @@
   gap: 10px; /* відстань між контентом і кнопками */
 }
 
-.task-content, .task-edit-form {
-  flex: 1 1 auto; /* займає весь простір між чекбоксом і кнопками */
-  min-width: 0;   /* важливо для flexbox */
-}
-
-
 .task-item.removing {
   opacity: 0;
   transform: translateX(-100%);
@@ -95,6 +89,14 @@ body.dark .task-item {
   min-width: 0;  /* важливо для overflow */
   margin-right: 10px;
 }
+
+
+.task-content, .task-edit-form {
+  flex: 1 1 auto; /* займає весь простір між чекбоксом і кнопками */
+  min-width: 0;   /* важливо для flexbox */
+  transition: .2s all ease;
+}
+
 
 .task-title {
   font-weight: bolder;

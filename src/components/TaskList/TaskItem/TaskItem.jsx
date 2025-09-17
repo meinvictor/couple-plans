@@ -12,11 +12,14 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
 
   // Toggle підзадач
-  const handleToggleSubtask = (id) => {
+  const handleToggleSubtask = async (id) => {
     const updated = editedTask.subtasks.map(st =>
       st.id === id ? { ...st, completed: !st.completed } : st
     );
     setEditedTask({ ...editedTask, subtasks: updated });
+
+    // синхронізація з Firebase
+    await onEdit(task.id, { subtasks: updated });
   };
 
   const handleAddSubtask = () => {
@@ -28,12 +31,25 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
     setIsChecklist(true);
   };
 
-  const handleSubtaskTitleChange = (id, value) => {
-    const updated = editedTask.subtasks.map(st =>
-      st.id === id ? { ...st, title: value } : st
-    );
-    setEditedTask({ ...editedTask, subtasks: updated });
+  const handleTitleChange = async (value) => {
+    setEditedTask({ ...editedTask, title: value });
+    await onEdit(task.id, { title: value });
   };
+
+  const handleSubtitleChange = async (value) => {
+    setEditedTask({ ...editedTask, subtitle: value });
+    await onEdit(task.id, { subtitle: value });
+  };
+
+  const handleSubtaskTitleChange = async (id, value) => {
+  const updated = editedTask.subtasks.map(st =>
+    st.id === id ? { ...st, title: value } : st
+  );
+  setEditedTask({ ...editedTask, subtasks: updated });
+  
+  // синхронізація з Firebase
+  await onEdit(task.id, { subtasks: updated });
+};
 
   const handleConvertToChecklist = () => {
     if (!editedTask.subtitle) return;
@@ -64,13 +80,13 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
         <div className="task-edit-form">
           <input
             value={editedTask.title}
-            onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
+            onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Заголовок"
           />
           {!isChecklist && (
             <textarea
               value={editedTask.subtitle}
-              onChange={(e) => setEditedTask({ ...editedTask, subtitle: e.target.value })}
+              onChange={(e) => handleSubtitleChange(e.target.value)}
               rows={2}
               placeholder="Опис"
             />
