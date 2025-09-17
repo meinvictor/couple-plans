@@ -74,7 +74,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
             placeholder="Опис"
           />
           <button className="save-btn" onClick={handleSave}>
-            <span>SAVE</span>
+            <img src={saveIcon} alt="Save" width="20px" height="20px" />
           </button>
         </div>
       ) : (

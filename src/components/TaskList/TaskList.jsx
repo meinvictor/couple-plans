@@ -36,6 +36,26 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
     return () => unsubscribe();
   }, [selectedDate, userId, onTaskCountChange]);
 
+  // Додавання часу
+  const handleTimeInputChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ""); // лише цифри
+    if (value.length > 4) value = value.slice(0, 4);
+
+    let formatted = value;
+    if (value.length > 2) {
+      formatted = `${value.slice(0, 2)}:${value.slice(2)}`;
+      const hours = parseInt(value.slice(0, 2));
+      const minutes = parseInt(value.slice(2));
+      if (hours > 23 || minutes > 59) return; // не оновлюємо, якщо час некоректний
+    }
+
+    setNewTask((prev) => ({
+      ...prev,
+      time: formatted,
+    }));
+  };
+
+
   // Додавання задачі у Firebase
   const handleAddTask = async () => {
     if (!newTask.title.trim()) return;
@@ -61,6 +81,7 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
     await updateDoc(doc(db, "tasks", id), updatedTask);
   };
 
+
   return (
     <div className="task-list glass">
       <h3>Список задач</h3>
@@ -80,21 +101,23 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
         />
         <input
           type="text"
-          placeholder="Час (10:00 - 11:00)"
+          placeholder="Час"
           value={newTask.time}
-          onChange={(e) => setNewTask({ ...newTask, time: e.target.value })}
+          onChange={handleTimeInputChange}
+          inputMode="numeric"
+          pattern="\d*"
         />
-        <button onClick={handleAddTask} className="AddTaskButton">Додати</button>
+        <button onClick={handleAddTask} className="addTaskButton">Додати</button>
       </div>
 
       {tasks.map(task => (
-  <TaskItem
-    key={task.id}
-    task={task}
-    onEdit={handleEditTask}
-    onComplete={handleCompleteTask} // передаємо нову функцію
-  />
-))}
+        <TaskItem
+          key={task.id}
+          task={task}
+          onEdit={handleEditTask}
+          onComplete={handleCompleteTask} // передаємо нову функцію
+        />
+      ))}
     </div>
   );
 };
