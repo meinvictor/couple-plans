@@ -112,6 +112,7 @@ body.dark .task-item {
   flex: 1 1 auto; /* займає весь простір між чекбоксом і кнопками */
   min-width: 0;   /* важливо для flexbox */
   transition: .2s all ease;
+
 }
 
 
@@ -202,13 +203,26 @@ body.dark .task-actions .icon-btn.active {
   width: 100%;
 }
 
+.task-edit-form textarea{ 
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+  color: var(--color-text-dark);
+  resize: vertical;
+  transition: background 0.3s ease, color 0.3s ease;
+  line-height: 1.4;
+  resize: none;
+  padding: 10px;
+  border-radius: 12px;
+}
 .task-edit-form input {
   padding: 10px;
   border-radius: 12px;
   border: none;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
   font-size: 1rem;
-  color: var(--color-text-light);
+  color: var(--color-text-dark);
   outline: none;
 }
 
@@ -224,8 +238,8 @@ body.dark .task-edit-form input {
   font-weight: bolder;
   margin-top: 10px;
   border-radius: var(--border-radius);
-  background-color: var(--color-purple);
-  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-dark);
   border: none;
   cursor: pointer;
   transition: background 0.3s;
@@ -370,27 +384,26 @@ body.dark .task-edit-form input {
 
 .add-subtask {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
   padding-left: 20px;
   padding-right: 40px;
-  /* щоб підзадачі не перекривали кнопки */
+  margin-top: 30px;
 }
 
 .add-subtask input {
   flex: 1;
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid rgba(165, 102, 255, 0.5);
-  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(165, 102, 255, 0.1);
   color: var(--color-text-dark);
-  border-radius: var(--border-radius);
   outline: none;
-  border: 0;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .add-subtask input:focus {
-  outline: none;
-  border: 0;
+  box-shadow: 0 0 0 3px rgba(165, 102, 255, 0.25);
 }
 
 body.light .add-subtask input {
@@ -398,19 +411,23 @@ body.light .add-subtask input {
   color: var(--color-text-light);
 }
 
-.add-subtask button {
-  padding: 6px 10px;
-  background: var(--color-purple);
+.add-subtask .add-subtask-btn {
+  padding: 8px 12px;
+  background: rgba(165, 102, 255, 0.5);
   color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s ease, transform 0.1s ease;
   white-space: nowrap;
 }
 
-.add-subtask button:hover {
+.add-subtask .add-subtask-btn:hover {
   background: #9a5eff;
+}
+
+.add-subtask .add-subtask-btn:active {
+  transform: scale(0.98);
 }
 
 .convert-btn {

@@ -27,8 +27,17 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
     const newSubtask = { id: Date.now().toString(), title: subtaskInput, completed: false };
     const updatedSubtasks = [...(editedTask.subtasks || []), newSubtask];
     setEditedTask({ ...editedTask, subtasks: updatedSubtasks });
+    // одразу синхронізуємо з Firebase
+    onEdit(task.id, { subtasks: updatedSubtasks });
     setSubtaskInput("");
     setIsChecklist(true);
+  };
+
+  const handleSubtaskInputKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSubtask();
+    }
   };
 
   const handleTitleChange = async (value) => {
@@ -124,8 +133,9 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                 placeholder="Нова підзадача"
                 value={subtaskInput}
                 onChange={(e) => setSubtaskInput(e.target.value)}
+                onKeyDown={handleSubtaskInputKeyDown}
               />
-              <button onClick={handleAddSubtask}>Додати</button>
+              <button className="add-subtask-btn" onClick={handleAddSubtask}>Додати</button>
             </div>
           )}
 
@@ -164,8 +174,9 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                 placeholder="Нова підзадача"
                 value={subtaskInput}
                 onChange={(e) => setSubtaskInput(e.target.value)}
+                onKeyDown={handleSubtaskInputKeyDown}
               />
-              <button onClick={handleAddSubtask}>Додати</button>
+              <button className="add-subtask-btn" onClick={handleAddSubtask}>Додати</button>
             </div>
           )}
         </div>
