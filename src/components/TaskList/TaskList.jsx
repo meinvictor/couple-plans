@@ -93,11 +93,11 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
           value={newTask.title}
           onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
         />
-        <input
-          type="text"
+        <textarea
           placeholder="Опис"
           value={newTask.subtitle}
           onChange={(e) => setNewTask({ ...newTask, subtitle: e.target.value })}
+          rows={3}
         />
         <input
           type="text"
