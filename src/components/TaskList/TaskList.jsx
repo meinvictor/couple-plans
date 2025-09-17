@@ -11,12 +11,11 @@ import {
   deleteDoc,
   where
 } from "../../firebase/config";
-import dayjs from "dayjs";
 import "./TaskList.css";
 
 const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
   const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState({ title: "", subtitle: "", time: "" });
+  const [newTask, setNewTask] = useState({ title: "", subtitle: "" });
 
   useEffect(() => {
     const q = query(
@@ -36,26 +35,6 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
     return () => unsubscribe();
   }, [selectedDate, userId, onTaskCountChange]);
 
-  // Додавання часу
-  const handleTimeInputChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // лише цифри
-    if (value.length > 4) value = value.slice(0, 4);
-
-    let formatted = value;
-    if (value.length > 2) {
-      formatted = `${value.slice(0, 2)}:${value.slice(2)}`;
-      const hours = parseInt(value.slice(0, 2));
-      const minutes = parseInt(value.slice(2));
-      if (hours > 23 || minutes > 59) return; // не оновлюємо, якщо час некоректний
-    }
-
-    setNewTask((prev) => ({
-      ...prev,
-      time: formatted,
-    }));
-  };
-
-
   // Додавання задачі у Firebase
   const handleAddTask = async () => {
     if (!newTask.title.trim()) return;
@@ -63,11 +42,10 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
     await addDoc(collection(db, "tasks"), {
       title: newTask.title,
       subtitle: newTask.subtitle,
-      time: newTask.time,
       date: selectedDate.format("YYYY-MM-DD")
     });
 
-    setNewTask({ title: "", subtitle: "", time: "" });
+    setNewTask({ title: "", subtitle: "" });
   };
 
   // Видалення задачі
@@ -98,14 +76,6 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
           value={newTask.subtitle}
           onChange={(e) => setNewTask({ ...newTask, subtitle: e.target.value })}
           rows={3}
-        />
-        <input
-          type="text"
-          placeholder="Час"
-          value={newTask.time}
-          onChange={handleTimeInputChange}
-          inputMode="numeric"
-          pattern="\d*"
         />
         <button onClick={handleAddTask} className="addTaskButton">Додати</button>
       </div>

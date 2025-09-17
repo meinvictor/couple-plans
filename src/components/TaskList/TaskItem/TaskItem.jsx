@@ -74,7 +74,6 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
   return (
     <div className="task-item">
-      {task.time && <div className="task-time">{task.time}</div>}
 
       {isEditing ? (
         <div className="task-edit-form">
@@ -94,13 +93,19 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
           {isChecklist && (
             <ul className="subtasks-list">
-              {editedTask.subtasks.map((st) => (
+              {editedTask.subtasks
+                .filter((st) => (st.title || "").trim() !== "")
+                .map((st) => (
                 <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
-                  <input
-                    type="checkbox"
-                    checked={st.completed}
-                    onChange={() => handleToggleSubtask(st.id)}
-                  />
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      className="checkbox-input"
+                      checked={st.completed}
+                      onChange={() => handleToggleSubtask(st.id)}
+                    />
+                    <span className="checkbox-custom"></span>
+                  </label>
                   <input
                     type="text"
                     value={st.title}
@@ -133,13 +138,19 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
           {isChecklist && (
             <ul className="subtasks-list">
-              {editedTask.subtasks.map((st) => (
+              {editedTask.subtasks
+                .filter((st) => (st.title || "").trim() !== "")
+                .map((st) => (
                 <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
-                  <input
-                    type="checkbox"
-                    checked={st.completed}
-                    onChange={() => handleToggleSubtask(st.id)}
-                  />
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      className="checkbox-input"
+                      checked={st.completed}
+                      onChange={() => handleToggleSubtask(st.id)}
+                    />
+                    <span className="checkbox-custom"></span>
+                  </label>
                   <span>{st.title}</span>
                 </li>
               ))}
@@ -161,10 +172,10 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
       )}
 
       <div className="task-actions">
-        <button onClick={handleChecklistIconClick}>
+        <button className={`icon-btn ${showSubtaskInput ? 'active' : ''}`} onClick={handleChecklistIconClick}>
           <TaskIcon className="task-icon" width='14' height='14' />
         </button>
-        <button onClick={() => setIsEditing(!isEditing)}>
+        <button className={`icon-btn ${isEditing ? 'active' : ''}`} onClick={() => setIsEditing(!isEditing)}>
           <EditIcon className="task-icon" width='14' height='14' />
         </button>
         <button onClick={() => onComplete(task.id)}>
