@@ -1,8 +1,11 @@
 import { useState } from "react";
 import "./TaskItem.css";
-import taskIcon from "../../../assets/icons/task-icon.svg"; 
-import editIcon from "../../../assets/icons/edit-icon.svg";
-import deleteIcon from "../../../assets/icons/delete-icon.svg";
+import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
+import { ReactComponent as TaskIcon } from "../../../assets/icons/task-icon.svg";
+import { ReactComponent as DeleteIcon } from "../../../assets/icons/delete-icon.svg";
+
+
+
 
 const TaskItem = ({ task, onEdit, onComplete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -79,7 +82,9 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
   return (
     <div className="task-item">
-      <div className="task-time">{task.time}</div>
+      {task.time && (
+        <div className="task-time">{task.time}</div>
+      )}
 
       {isEditing ? (
         <div className="task-edit-form">
@@ -121,7 +126,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
             </ul>
           )}
 
-         
+
           {isChecklist && showSubtaskInput && (
             <div className="add-subtask">
               <input
@@ -139,13 +144,13 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
       <div className="task-actions">
         <button onClick={handleChecklistIconClick}>
-          <img src={taskIcon} alt="Checklist" title="Підзадачі" />
+          <TaskIcon className="task-icon" width='14' height='14' />
         </button>
         <button onClick={() => setIsEditing(!isEditing)}>
-          <img src={editIcon} alt="Edit" />
+          <EditIcon className="task-icon" width='14' height='14' />
         </button>
         <button onClick={() => onComplete(task.id)}>
-          <img src={deleteIcon} alt="Delete" />
+          <DeleteIcon className="task-icon" width='14' height='14' />
         </button>
       </div>
 

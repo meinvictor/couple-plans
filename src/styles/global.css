@@ -46,3 +46,11 @@ body.dark .addTaskButton {
 body.dark .task-time {
   background-color: rgb(104, 71, 138);
 }
+
+/* у CSS змінних для body.dark і body.light */
+body.dark {
+  --color-icon: white;
+}
+body.light {
+  --color-icon: black;
+}
