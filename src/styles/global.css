@@ -54,3 +54,9 @@ body.dark {
 body.light {
   --color-icon: black;
 }
+
+/* Ensure main app content is above starfield background */
+.container {
+	position: relative;
+	z-index: 1;
+}

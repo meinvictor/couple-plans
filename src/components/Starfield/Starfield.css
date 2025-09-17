@@ -1,0 +1,29 @@
+.starfield {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: transparent;
+}
+
+.star-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	background: transparent;
+	animation-name: animStar;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+.star-layer-duplicate {
+	position: absolute;
+	top: 2000px;
+}
+
+@keyframes animStar {
+	from { transform: translateY(0); }
+	to { transform: translateY(-2000px); }
+}
+
+
