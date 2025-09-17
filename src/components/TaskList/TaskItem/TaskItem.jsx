@@ -130,7 +130,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                 value={subtaskInput}
                 onChange={(e) => setSubtaskInput(e.target.value)}
               />
-              <button onClick={handleAddSubtask}>+</button>
+              <button onClick={handleAddSubtask}>Додати</button>
             </div>
           )}
 

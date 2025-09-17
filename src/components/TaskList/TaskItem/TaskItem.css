@@ -216,7 +216,7 @@ body.dark .task-edit-form input {
   gap: 8px;
   margin-bottom: 6px;
   padding: 4px 6px;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
 }
@@ -265,17 +265,23 @@ body.dark .task-edit-form input {
 
 .add-subtask input {
   flex: 1;
-  padding: 6px;
+  padding: 10px 10px;
   border-radius: 8px;
   border: 1px solid rgba(165, 102, 255, 0.5);
   background: rgba(255, 255, 255, 0.2);
   color: var(--color-text-dark);
+  border-radius: var(--border-radius);
   outline: none;
   border: 0;
 }
 .add-subtask input:focus{
   outline: none;
   border: 0;
+}
+
+body.light .add-subtask input {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-light);
 }
 
 .add-subtask button {
