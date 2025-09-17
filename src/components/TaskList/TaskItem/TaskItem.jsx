@@ -1,106 +1,154 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import "./TaskItem.css";
+import taskIcon from "../../../assets/icons/task-icon.svg"; 
 import editIcon from "../../../assets/icons/edit-icon.svg";
-import saveIcon from "../../../assets/icons/save-icon.svg"
+import deleteIcon from "../../../assets/icons/delete-icon.svg";
 
 const TaskItem = ({ task, onEdit, onComplete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState(task);
-  const [checked, setChecked] = useState(false);
-  const [translateX, setTranslateX] = useState(0);
-  const [removing, setRemoving] = useState(false);
-  const touchStartX = useRef(null);
+  const [subtaskInput, setSubtaskInput] = useState("");
+  const [isChecklist, setIsChecklist] = useState(task.subtasks?.length > 0);
+  const [showSubtaskInput, setShowSubtaskInput] = useState(false);
+
+
+  // Drag & Drop
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
+  const handleToggleSubtask = (id) => {
+    const updated = editedTask.subtasks.map(st =>
+      st.id === id ? { ...st, completed: !st.completed } : st
+    );
+    setEditedTask({ ...editedTask, subtasks: updated });
+    onEdit(task.id, { subtasks: updated });
+  };
+
+  const handleAddSubtask = () => {
+    if (!subtaskInput.trim()) return;
+    const newSubtask = { id: Date.now().toString(), title: subtaskInput, completed: false };
+    const updatedSubtasks = [...(editedTask.subtasks || []), newSubtask];
+    setEditedTask({ ...editedTask, subtasks: updatedSubtasks });
+    onEdit(task.id, { subtasks: updatedSubtasks });
+    setSubtaskInput("");
+    setIsChecklist(true);
+  };
+
+  const handleConvertToChecklist = () => {
+    if (!editedTask.subtitle) return;
+    const lines = editedTask.subtitle.split("\n").filter(l => l.trim() !== "");
+    const subtasks = lines.map(line => ({ id: Date.now() + Math.random(), title: line, completed: false }));
+    setEditedTask({ ...editedTask, subtasks, subtitle: "" });
+    onEdit(task.id, { subtasks, subtitle: "" });
+    setIsChecklist(true);
+  };
 
   const handleSave = () => {
     onEdit(task.id, editedTask);
     setIsEditing(false);
   };
 
-  // Чекбокс: видалення через 5 секунд
-  useEffect(() => {
-    if (checked) {
-      const timer = setTimeout(() => triggerRemove(), 5000);
-      return () => clearTimeout(timer);
+  // Drag & Drop handlers
+  const handleDragStart = (index) => setDraggedIndex(index);
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const updatedSubtasks = [...editedTask.subtasks];
+    const draggedItem = updatedSubtasks[draggedIndex];
+    updatedSubtasks.splice(draggedIndex, 1);
+    updatedSubtasks.splice(index, 0, draggedItem);
+
+    setDraggedIndex(index);
+    setEditedTask({ ...editedTask, subtasks: updatedSubtasks });
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    onEdit(task.id, { subtasks: editedTask.subtasks });
+  };
+
+
+  const handleChecklistIconClick = () => {
+    if (!isChecklist && editedTask.subtitle) {
+      handleConvertToChecklist();
     }
-  }, [checked]);
-
-  const triggerRemove = () => {
-    setRemoving(true);
-    setTimeout(() => {
-      onComplete(task.id);
-    }, 500); // співпадає з transition в CSS
-  };
-
-  // Свайп логіка
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    if (!touchStartX.current) return;
-    const deltaX = e.touches[0].clientX - touchStartX.current;
-    if (deltaX < 0) setTranslateX(deltaX); // тільки свайп вліво
-  };
-
-  const handleTouchEnd = () => {
-    if (translateX < -100) triggerRemove();
-    setTranslateX(0);
-    touchStartX.current = null;
+    setIsChecklist(true);
+    setShowSubtaskInput(prev => !prev);
   };
 
   return (
-    <div
-      className={`task-item ${isEditing ? "editing" : ""} ${removing ? "removing" : ""}`}
-      style={{ transform: `translateX(${translateX}px)`, transition: translateX === 0 ? "0.3s ease" : "none" }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className="task-item">
+      <div className="task-time">{task.time}</div>
+
       {isEditing ? (
         <div className="task-edit-form">
           <input
-            value={editedTask.time}
-            onChange={(e) => setEditedTask({ ...editedTask, time: e.target.value })}
-            placeholder="Час"
-          />
-          <input
             value={editedTask.title}
             onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
-            placeholder="Заголовок"
           />
-          <input
+          <textarea
             value={editedTask.subtitle}
             onChange={(e) => setEditedTask({ ...editedTask, subtitle: e.target.value })}
-            placeholder="Опис"
+            rows={2}
           />
-          <button className="save-btn" onClick={handleSave}>
-            <img src={saveIcon} alt="Save" width="20px" height="20px" />
-          </button>
+          <button className="save-btn" onClick={handleSave}>Зберегти</button>
         </div>
       ) : (
-        <>
-          {task.time && <div className="task-time">{task.time}</div>}
+        <div className="task-content">
+          <div className="task-title">{task.title}</div>
+          {!isChecklist && <div className="task-subtitle">{task.subtitle}</div>}
 
-          <input
-            type="checkbox"
-            checked={checked}
-            onChange={() => setChecked(!checked)}
-            className="taskCompleteCheckbox"
-            title="Позначити як виконане"
-          />
+          {isChecklist && (
+            <ul className="subtasks-list">
+              {editedTask.subtasks.map((st, index) => (
+                <li
+                  key={st.id}
+                  className={`subtask-item ${st.completed ? "completed" : "pending"}`}
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragEnd={handleDragEnd}
+                >
+                  <input
+                    type="checkbox"
+                    checked={st.completed}
+                    onChange={() => handleToggleSubtask(st.id)}
+                  />
+                  <span>{st.title}</span>
+                </li>
+              ))}
+            </ul>
+          )}
 
-          <div className="task-content" style={{ textDecoration: checked ? "line-through" : "none", opacity: checked ? 0.5 : 1 }}>
-            <p className="task-title">{task.title}</p>
-            <small className="task-subtitle">{task.subtitle}</small>
-          </div>
+         
+          {isChecklist && showSubtaskInput && (
+            <div className="add-subtask">
+              <input
+                type="text"
+                placeholder="Нова підзадача"
+                value={subtaskInput}
+                onChange={(e) => setSubtaskInput(e.target.value)}
+              />
+              <button onClick={handleAddSubtask}>+</button>
+            </div>
+          )}
 
-          <div className="task-actions">
-            <button onClick={() => setIsEditing(true)} title="Редагувати">
-              <img src={editIcon} alt="Edit" width="24px" height="24px" />
-            </button>
-          </div>
-        </>
+        </div>
       )}
+
+      <div className="task-actions">
+        <button onClick={handleChecklistIconClick}>
+          <img src={taskIcon} alt="Checklist" title="Підзадачі" />
+        </button>
+        <button onClick={() => setIsEditing(!isEditing)}>
+          <img src={editIcon} alt="Edit" />
+        </button>
+        <button onClick={() => onComplete(task.id)}>
+          <img src={deleteIcon} alt="Delete" />
+        </button>
+      </div>
+
     </div>
   );
 };
