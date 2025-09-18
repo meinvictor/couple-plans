@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./TaskItem.css";
 import { ReactComponent as EditIcon } from "../../../assets/icons/edit-icon.svg";
 import { ReactComponent as TaskIcon } from "../../../assets/icons/task-icon.svg";
@@ -11,9 +11,53 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   const [isChecklist, setIsChecklist] = useState(task.subtasks?.length > 0);
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
 
+  // Persist in-progress edits per task
+  const storageKey = `taskDraft:${task.id}`;
+
+  // Load draft on mount or when task changes
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === "object") {
+          if (parsed.editedTask) setEditedTask(parsed.editedTask);
+          if (typeof parsed.isEditing === "boolean") setIsEditing(parsed.isEditing);
+          if (typeof parsed.isChecklist === "boolean") setIsChecklist(parsed.isChecklist);
+          if (typeof parsed.showSubtaskInput === "boolean") setShowSubtaskInput(parsed.showSubtaskInput);
+          if (typeof parsed.subtaskInput === "string") setSubtaskInput(parsed.subtaskInput);
+        }
+      } else {
+        // sync with latest task data if no draft
+        setEditedTask(task);
+        setIsChecklist(task.subtasks?.length > 0);
+      }
+    } catch {
+      // ignore storage errors
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  // Save draft on changes
+  useEffect(() => {
+    try {
+      const payload = {
+        isEditing,
+        editedTask,
+        isChecklist,
+        showSubtaskInput,
+        subtaskInput
+      };
+      localStorage.setItem(storageKey, JSON.stringify(payload));
+    } catch {
+      // ignore storage errors
+    }
+  }, [isEditing, editedTask, isChecklist, showSubtaskInput, subtaskInput, storageKey]);
+
   // Toggle підзадач
   const handleToggleSubtask = async (id) => {
-    const updated = editedTask.subtasks.map(st =>
+    const current = editedTask.subtasks || [];
+    const updated = current.map(st =>
       st.id === id ? { ...st, completed: !st.completed } : st
     );
     setEditedTask({ ...editedTask, subtasks: updated });
@@ -51,7 +95,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   };
 
   const handleSubtaskTitleChange = async (id, value) => {
-  const updated = editedTask.subtasks.map(st =>
+  const updated = (editedTask.subtasks || []).map(st =>
     st.id === id ? { ...st, title: value } : st
   );
   setEditedTask({ ...editedTask, subtasks: updated });
@@ -59,6 +103,14 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   // синхронізація з Firebase
   await onEdit(task.id, { subtasks: updated });
 };
+
+  // Видалення підзадачі
+  const handleDeleteSubtask = async (id) => {
+    const updated = (editedTask.subtasks || []).filter(st => st.id !== id);
+    setEditedTask({ ...editedTask, subtasks: updated });
+    // синхронізація з Firebase
+    await onEdit(task.id, { subtasks: updated });
+  };
 
   const handleConvertToChecklist = () => {
     if (!editedTask.subtitle) return;
@@ -71,6 +123,8 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   const handleSave = () => {
     onEdit(task.id, editedTask);
     setIsEditing(false);
+    setShowSubtaskInput(false);
+    try { localStorage.removeItem(storageKey); } catch {}
   };
 
   const handleChecklistIconClick = () => {
@@ -78,7 +132,8 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
       handleConvertToChecklist();
     }
     setIsChecklist(true);
-    setShowSubtaskInput(prev => !prev);
+    // Не відкривати інпут додавання при перетворенні
+    setShowSubtaskInput(false);
   };
 
   return (
@@ -102,7 +157,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
           {isChecklist && (
             <ul className="subtasks-list">
-              {editedTask.subtasks
+              {(editedTask.subtasks || [])
                 .filter((st) => (st.title || "").trim() !== "")
                 .map((st) => (
                 <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
@@ -119,8 +174,26 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                     type="text"
                     value={st.title}
                     onChange={(e) => handleSubtaskTitleChange(st.id, e.target.value)}
-                    style={{ flex: 1, border: "none", background: "transparent", color: "inherit" }}
+                    style={{ flex: 1, minWidth: 0, border: "none", background: "transparent", color: "inherit" }}
                   />
+                  <button
+                    type="button"
+                    className="subtask-delete-btn"
+                    onClick={() => handleDeleteSubtask(st.id)}
+                    aria-label="Видалити підзадачу"
+                    title="Видалити"
+                    style={{
+                      marginLeft: 8,
+                      background: "transparent",
+                      border: "none",
+                      color: "inherit",
+                      cursor: "pointer",
+                      fontSize: 16,
+                      lineHeight: 1
+                    }}
+                  >
+                    ×
+                  </button>
                 </li>
               ))}
             </ul>
@@ -148,7 +221,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
 
           {isChecklist && (
             <ul className="subtasks-list">
-              {editedTask.subtasks
+              {(editedTask.subtasks || [])
                 .filter((st) => (st.title || "").trim() !== "")
                 .map((st) => (
                 <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
@@ -161,7 +234,25 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                     />
                     <span className="checkbox-custom"></span>
                   </label>
-                  <span>{st.title}</span>
+                  <span className="subtask-title">{st.title}</span>
+                  <button
+                    type="button"
+                    className="subtask-delete-btn"
+                    onClick={() => handleDeleteSubtask(st.id)}
+                    aria-label="Видалити підзадачу"
+                    title="Видалити"
+                    style={{
+                      marginLeft: 8,
+                      background: "transparent",
+                      border: "none",
+                      color: "inherit",
+                      cursor: "pointer",
+                      fontSize: 16,
+                      lineHeight: 1
+                    }}
+                  >
+                    ×
+                  </button>
                 </li>
               ))}
             </ul>
@@ -186,10 +277,23 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
         <button className={`icon-btn ${showSubtaskInput ? 'active' : ''}`} onClick={handleChecklistIconClick}>
           <TaskIcon className="task-icon" width='14' height='14' />
         </button>
-        <button className={`icon-btn ${isEditing ? 'active' : ''}`} onClick={() => setIsEditing(!isEditing)}>
+        <button
+          className={`icon-btn ${isEditing ? 'active' : ''}`}
+          onClick={() => {
+            const next = !isEditing;
+            setIsEditing(next);
+            // Не змінюємо режим на чекліст автоматично,
+            // лише показуємо інпут додавання, якщо вже чекліст
+            if (next) {
+              setShowSubtaskInput(isChecklist);
+            } else {
+              setShowSubtaskInput(false);
+            }
+          }}
+        >
           <EditIcon className="task-icon" width='14' height='14' />
         </button>
-        <button onClick={() => onComplete(task.id)}>
+        <button onClick={() => { try { localStorage.removeItem(storageKey); } catch {}; onComplete(task.id); }}>
           <DeleteIcon className="task-icon" width='14' height='14' />
         </button>
       </div>

@@ -17,6 +17,37 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({ title: "", subtitle: "" });
 
+  // Ключ для localStorage залежно від дати
+  const draftStorageKey = `draftTask:${selectedDate.format("YYYY-MM-DD")}`;
+
+  // Завантажуємо чернетку при зміні дати
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(draftStorageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // проста валідація
+        if (typeof parsed?.title === "string" && typeof parsed?.subtitle === "string") {
+          setNewTask(parsed);
+        } else {
+          setNewTask({ title: "", subtitle: "" });
+        }
+      } else {
+        setNewTask({ title: "", subtitle: "" });
+      }
+    } catch {
+      setNewTask({ title: "", subtitle: "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftStorageKey]);
+
+  // Зберігаємо чернетку при кожній зміні полів
+  useEffect(() => {
+    try {
+      localStorage.setItem(draftStorageKey, JSON.stringify(newTask));
+    } catch {}
+  }, [newTask, draftStorageKey]);
+
   useEffect(() => {
     const q = query(
       collection(db, "tasks"),
@@ -46,6 +77,8 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
     });
 
     setNewTask({ title: "", subtitle: "" });
+    // очищаємо чернетку після створення
+    try { localStorage.removeItem(draftStorageKey); } catch {}
   };
 
   // Видалення задачі
