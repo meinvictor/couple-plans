@@ -54,6 +54,13 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
     }
   }, [isEditing, editedTask, isChecklist, showSubtaskInput, subtaskInput, storageKey]);
 
+  // Sync from Firestore when task prop changes (e.g., updates from another device)
+  useEffect(() => {
+    if (isEditing) return; // do not override local edits in progress
+    setEditedTask(task);
+    setIsChecklist((task.subtasks || []).length > 0);
+  }, [task, isEditing]);
+
   // Toggle підзадач
   const handleToggleSubtask = async (id) => {
     const current = editedTask.subtasks || [];

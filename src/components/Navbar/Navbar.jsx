@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import dayjs from "dayjs";
 import "dayjs/locale/uk"; 
 import { ReactComponent as DayTheme } from '../../assets/icons/day-icon.svg';
@@ -10,6 +11,7 @@ dayjs.locale("uk");
 
 const Navbar = ({ taskCount }) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { user, logout } = useAuth();
 
   const todayRaw = dayjs().format("dddd, D MMMM");
   const today = capitalizeFirstLetter(todayRaw);   
@@ -38,6 +40,12 @@ const Navbar = ({ taskCount }) => {
         <button onClick={toggleTheme} className="theme-toggle">
           {theme === "light" ? <DayTheme /> : <NightTheme />}
         </button>
+        {user && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ opacity: 0.8 }}>{user.name}</span>
+            <button onClick={logout} className="btn-secondary">Вийти</button>
+          </div>
+        )}
       </div>
     </div>
   );

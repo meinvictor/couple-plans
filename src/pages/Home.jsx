@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 
 const Home = () => {
   const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [taskCount, setTaskCount] = useState(0); 
+  const [taskCount, setTaskCount] = useState(0);
   const userId = "user1";
   const { theme } = useContext(ThemeContext);
 
