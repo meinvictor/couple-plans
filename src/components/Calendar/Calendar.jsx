@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import { db } from "../../firebase/config";
 import { collection, getDocs } from "firebase/firestore"
@@ -7,9 +7,12 @@ import "./Calendar.css";
 const Calendar = ({ selectedDate, setSelectedDate }) => {
   const [datesWithTasks, setDatesWithTasks] = useState([]);
 
-  const days = Array.from({ length: 7 }, (_, i) =>
-    dayjs().add(i, "day")
+  const days = Array.from({ length: 15 }, (_, i) =>
+    dayjs().subtract(7, "day").add(i, "day")
   );
+
+  const containerRef = useRef(null);
+  const todayIndex = 7;
 
   // Отримуємо всі дати з задачами
   useEffect(() => {
@@ -30,8 +33,18 @@ const Calendar = ({ selectedDate, setSelectedDate }) => {
     fetchDates();
   }, []);
 
+  // Прокрутити до сьогодні при першому показі
+  useEffect(() => {
+    const el = containerRef.current?.children?.[todayIndex];
+    if (el && typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ behavior: "auto", inline: "center", block: "nearest" });
+    }
+    // одноразово на монтування
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <div className="calendar glass">
+    <div ref={containerRef} className="calendar glass">
       {days.map((day, index) => {
         const isSelected = day.isSame(selectedDate, "day");
         const hasTasks = datesWithTasks.includes(day.format("YYYY-MM-DD"));
