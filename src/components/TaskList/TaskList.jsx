@@ -89,6 +89,7 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
 
   // Редагування задачі
   const handleEditTask = async (id, updatedTask) => {
+    console.log('Updating task in Firebase:', id, updatedTask); // Діагностика
     await updateDoc(doc(db, "tasks", id), updatedTask);
   };
 

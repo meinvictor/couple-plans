@@ -57,6 +57,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   // Sync from Firestore when task prop changes (e.g., updates from another device)
   useEffect(() => {
     if (isEditing) return; // do not override local edits in progress
+    console.log('TaskItem: Syncing task data:', task); // Діагностика
     setEditedTask(task);
     setIsChecklist((task.subtasks || []).length > 0);
   }, [task, isEditing]);
@@ -119,12 +120,17 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
     await onEdit(task.id, { subtasks: updated });
   };
 
-  const handleConvertToChecklist = () => {
+  const handleConvertToChecklist = async () => {
     if (!editedTask.subtitle) return;
     const lines = editedTask.subtitle.split("\n").filter(l => l.trim() !== "");
     const subtasks = lines.map(line => ({ id: Date.now() + Math.random(), title: line, completed: false }));
-    setEditedTask({ ...editedTask, subtasks, subtitle: "" });
+    const updatedTask = { ...editedTask, subtasks, subtitle: "" };
+    console.log('Converting to checklist:', updatedTask); // Діагностика
+    setEditedTask(updatedTask);
     setIsChecklist(true);
+    
+    // Зберігаємо в Firebase одразу після конвертації
+    await onEdit(task.id, updatedTask);
   };
 
   const handleSave = () => {
