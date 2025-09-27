@@ -6,6 +6,7 @@ import "./Calendar.css";
 
 const Calendar = ({ selectedDate, setSelectedDate }) => {
   const [datesWithTasks, setDatesWithTasks] = useState([]);
+  const [showLeftIndicator, setShowLeftIndicator] = useState(true);
 
   const days = Array.from({ length: 15 }, (_, i) =>
     dayjs().subtract(7, "day").add(i, "day")
@@ -33,18 +34,39 @@ const Calendar = ({ selectedDate, setSelectedDate }) => {
     fetchDates();
   }, []);
 
-  // Прокрутити до сьогодні при першому показі
+  // Прокрутити до сьогодні при першому показі (показуємо сьогодні як перший видимий день)
   useEffect(() => {
     const el = containerRef.current?.children?.[todayIndex];
     if (el && typeof el.scrollIntoView === "function") {
-      el.scrollIntoView({ behavior: "auto", inline: "center", block: "nearest" });
+      el.scrollIntoView({ behavior: "auto", inline: "start", block: "nearest" });
     }
     // одноразово на монтування
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Відстеження прокрутки для показу/приховування індикатора
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      setShowLeftIndicator(scrollLeft > 0);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div ref={containerRef} className="calendar glass">
+      {/* Індикатор прокрутки вліво */}
+      {showLeftIndicator && (
+        <div className="scroll-indicator left">
+          <div className="scroll-arrow">←</div>
+        </div>
+      )}
+      
       {days.map((day, index) => {
         const isSelected = day.isSame(selectedDate, "day");
         const hasTasks = datesWithTasks.includes(day.format("YYYY-MM-DD"));

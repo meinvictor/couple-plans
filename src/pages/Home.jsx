@@ -13,17 +13,33 @@ const Home = () => {
   const userId = "user1";
   const { theme } = useContext(ThemeContext);
 
-  // Відновлення вибраної дати з localStorage
+  // Відновлення вибраної дати з localStorage, але завжди встановлюємо сьогоднішню дату при першому заході
   useEffect(() => {
     try {
       const stored = localStorage.getItem("selectedDate");
+      const today = dayjs();
+      
       if (stored) {
         const parsed = dayjs(stored);
         if (parsed.isValid()) {
-          setSelectedDate(parsed);
+          // Якщо збережена дата - це сьогодні, використовуємо її
+          // Інакше встановлюємо сьогоднішню дату
+          if (parsed.isSame(today, 'day')) {
+            setSelectedDate(parsed);
+          } else {
+            setSelectedDate(today);
+          }
+        } else {
+          setSelectedDate(today);
         }
+      } else {
+        // Якщо немає збереженої дати, встановлюємо сьогоднішню
+        setSelectedDate(today);
       }
-    } catch {}
+    } catch {
+      // У випадку помилки встановлюємо сьогоднішню дату
+      setSelectedDate(dayjs());
+    }
   }, []);
 
   // Збереження вибраної дати
