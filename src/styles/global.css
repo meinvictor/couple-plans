@@ -28,7 +28,7 @@ body {
 }
 
 body.light {
-  background: linear-gradient(135deg, #f0e5ff, #d9c2ff);
+  background: white;
   color: var(--color-text-light);
 }
 
