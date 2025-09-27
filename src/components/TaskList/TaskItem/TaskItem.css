@@ -208,7 +208,7 @@ body.dark .task-actions .icon-btn.active {
   outline: none;
   background: rgba(255, 255, 255, 0.1);
   font-size: 1rem;
-  color: var(--color-text-dark);
+  color: var(--color-text-light);
   resize: vertical;
   transition: background 0.3s ease, color 0.3s ease;
   line-height: 1.4;
@@ -216,13 +216,19 @@ body.dark .task-actions .icon-btn.active {
   padding: 10px;
   border-radius: 12px;
 }
+
+body.dark .task-edit-form textarea {
+  background: rgba(70, 50, 90, 0.4);
+  color: var(--color-text-dark);
+}
+
 .task-edit-form input {
   padding: 10px;
   border-radius: 12px;
   border: none;
   background: rgba(255, 255, 255, 0.1);
   font-size: 1rem;
-  color: var(--color-text-dark);
+  color: var(--color-text-light);
   outline: none;
 }
 
@@ -239,10 +245,15 @@ body.dark .task-edit-form input {
   margin-top: 10px;
   border-radius: var(--border-radius);
   background: rgba(255, 255, 255, 0.2);
-  color: var(--color-text-dark);
+  color: var(--color-text-light);
   border: none;
   cursor: pointer;
   transition: background 0.3s;
+}
+
+body.dark .task-edit-form .save-btn {
+  background: rgba(70, 50, 90, 0.4);
+  color: var(--color-text-dark);
 }
 
 .task-edit-form .save-btn:hover {
@@ -435,9 +446,14 @@ body.dark .task-edit-form input {
   border-radius: 12px;
   border: none;
   background: rgba(165, 102, 255, 0.1);
-  color: var(--color-text-dark);
+  color: var(--color-text-light);
   outline: none;
   transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.dark .add-subtask input {
+  background: rgba(165, 102, 255, 0.1);
+  color: var(--color-text-dark);
 }
 
 .add-subtask input:focus {

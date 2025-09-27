@@ -14,6 +14,11 @@ export const ThemeProvider = ({ children }) => {
 
   const [theme, setTheme] = useState(getSystemTheme);
 
+  // Застосовуємо клас до body при зміні теми
+  useEffect(() => {
+    document.body.className = theme;
+  }, [theme]);
+
   // Слухаємо зміни в налаштуваннях пристрою
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -22,11 +27,8 @@ export const ThemeProvider = ({ children }) => {
     };
     mediaQuery.addEventListener("change", handleChange);
 
-    // Застосовуємо клас до body
-    document.body.className = theme;
-
     return () => mediaQuery.removeEventListener("change", handleChange);
-  }, [theme]);
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));

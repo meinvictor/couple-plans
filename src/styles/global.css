@@ -37,6 +37,26 @@ body.dark {
   color: var(--color-text-dark);
 }
 
+/* Загальні стилі для тексту в обох темах */
+body.light * {
+  color: inherit;
+}
+
+body.dark * {
+  color: inherit;
+}
+
+/* Переконаємося, що всі текстові елементи наслідують правильний колір */
+body.light h1, body.light h2, body.light h3, body.light h4, body.light h5, body.light h6,
+body.light p, body.light span, body.light div, body.light input, body.light textarea {
+  color: var(--color-text-light);
+}
+
+body.dark h1, body.dark h2, body.dark h3, body.dark h4, body.dark h5, body.dark h6,
+body.dark p, body.dark span, body.dark div, body.dark input, body.dark textarea {
+  color: var(--color-text-dark);
+}
+
 
 
 body.dark .addTaskButton {
