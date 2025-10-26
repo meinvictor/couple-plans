@@ -10,6 +10,9 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   const [subtaskInput, setSubtaskInput] = useState("");
   const [isChecklist, setIsChecklist] = useState(task.subtasks?.length > 0);
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
+  // drag & drop state for reordering subtasks
+  const [draggingIndex, setDraggingIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   // Persist in-progress edits per task
   const storageKey = `taskDraft:${task.id}`;
@@ -112,6 +115,44 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
   await onEdit(task.id, { subtasks: updated });
 };
 
+  // Drag handlers for reordering subtasks
+  const handleDragStart = (index) => (e) => {
+    try { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(index)); } catch {}
+    setDraggingIndex(index);
+  };
+
+  const handleDragOver = (index) => (e) => {
+    e.preventDefault(); // allow drop
+    if (dragOverIndex !== index) setDragOverIndex(index);
+  };
+
+  const handleDrop = (index) => async (e) => {
+    e.preventDefault();
+    const from = draggingIndex != null ? draggingIndex : parseInt(e.dataTransfer.getData("text/plain"), 10);
+    const to = index;
+    if (isNaN(from) || from === to) {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const arr = [...(editedTask.subtasks || [])];
+    const [moved] = arr.splice(from, 1);
+    arr.splice(to, 0, moved);
+
+    setEditedTask({ ...editedTask, subtasks: arr });
+    // persist new order
+    await onEdit(task.id, { subtasks: arr });
+
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingIndex(null);
+    setDragOverIndex(null);
+  };
+
   // Видалення підзадачі
   const handleDeleteSubtask = async (id) => {
     const updated = (editedTask.subtasks || []).filter(st => st.id !== id);
@@ -172,8 +213,18 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
             <ul className="subtasks-list">
               {(editedTask.subtasks || [])
                 .filter((st) => (st.title || "").trim() !== "")
-                .map((st) => (
-                <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
+                .map((st, idx) => (
+                <li
+                  key={st.id}
+                  className={`subtask-item ${st.completed ? "completed" : "pending"} ${draggingIndex === idx ? 'dragging' : ''} ${dragOverIndex === idx ? 'drag-over' : ''}`}
+                  draggable
+                  onDragStart={handleDragStart(idx)}
+                  onDragOver={handleDragOver(idx)}
+                  onDrop={handleDrop(idx)}
+                  onDragEnd={handleDragEnd}
+                  role="option"
+                  aria-grabbed={draggingIndex === idx}
+                >
                   <label className="checkbox">
                     <input
                       type="checkbox"
@@ -236,8 +287,18 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
             <ul className="subtasks-list">
               {(editedTask.subtasks || [])
                 .filter((st) => (st.title || "").trim() !== "")
-                .map((st) => (
-                <li key={st.id} className={`subtask-item ${st.completed ? "completed" : "pending"}`}>
+                .map((st, idx) => (
+                <li
+                  key={st.id}
+                  className={`subtask-item ${st.completed ? "completed" : "pending"} ${draggingIndex === idx ? 'dragging' : ''} ${dragOverIndex === idx ? 'drag-over' : ''}`}
+                  draggable
+                  onDragStart={handleDragStart(idx)}
+                  onDragOver={handleDragOver(idx)}
+                  onDrop={handleDrop(idx)}
+                  onDragEnd={handleDragEnd}
+                  role="option"
+                  aria-grabbed={draggingIndex === idx}
+                >
                   <label className="checkbox">
                     <input
                       type="checkbox"
