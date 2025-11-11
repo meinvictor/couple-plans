@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, query, onSnapshot, addDoc, updateDoc, doc, deleteDoc, where } from "firebase/firestore";
+import { getFirestore, collection, query, onSnapshot, addDoc, updateDoc, doc, deleteDoc, where, setDoc } from "firebase/firestore";
+import { getMessaging } from "firebase/messaging";
 
 
 // Your web app's Firebase configuration
@@ -16,5 +17,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const messaging = getMessaging(app);
 
-export { db, collection, query, onSnapshot, addDoc, updateDoc, doc, deleteDoc, where };
+export { db, collection, query, onSnapshot, addDoc, updateDoc, doc, deleteDoc, where, setDoc, messaging };

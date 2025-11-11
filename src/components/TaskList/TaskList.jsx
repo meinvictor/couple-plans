@@ -119,7 +119,7 @@ const TaskList = ({ selectedDate, userId, onTaskCountChange }) => {
           key={task.id}
           task={task}
           onEdit={handleEditTask}
-          onComplete={handleCompleteTask} // передаємо нову функцію
+          onComplete={handleCompleteTask} 
         />
       ))}
     </div>
