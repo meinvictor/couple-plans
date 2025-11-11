@@ -224,6 +224,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                   onDragEnd={handleDragEnd}
                   role="option"
                   aria-grabbed={draggingIndex === idx}
+                  aria-selected={draggingIndex === idx}
                 >
                   <label className="checkbox">
                     <input
@@ -298,6 +299,7 @@ const TaskItem = ({ task, onEdit, onComplete }) => {
                   onDragEnd={handleDragEnd}
                   role="option"
                   aria-grabbed={draggingIndex === idx}
+                  aria-selected={draggingIndex === idx}
                 >
                   <label className="checkbox">
                     <input
